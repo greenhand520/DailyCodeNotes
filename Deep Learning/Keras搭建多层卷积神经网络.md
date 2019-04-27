@@ -2,6 +2,29 @@ keras可同时支持卷积神经网络和循环神经网络，以及两者的组
 
 ## 搭载CNN需要的基本神经网络层
 
+## Lambda层
+
+```python
+keras.layers.core.Lambda(function, output_shape=None, mask=None, arguments=None)
+```
+
+本函数用以对上一层的输出施以任何TensorFlow表达式。
+
+### 参数
+
+- function：要实现的函数，该函数仅接受一个变量，即上一层的输出
+- output_shape：函数应该返回的值的shape，可以是一个tuple，也可以是一个根据输入shape计算输出shape的函数
+- mask: 掩膜
+- arguments：可选，字典，用来记录向函数中传递的其他关键字参数
+
+### 输入shape
+
+任意，当使用该层作为第一层时，要指定`input_shape`
+
+### 输出shape
+
+由`output_shape`参数指定的输出shape，当使用tensorflow时可自动推断
+
 ## 神经网络层
 
 输入层、卷积层、激活层、池化层、全连接层
@@ -110,7 +133,7 @@ keras.layers.MaxPooling2D(pool_size=(2, 2), strides=None, padding='valid', data_
 
 将输入展平。
 
-不影响批量大小，它表明输入的维度的顺序。此参数的目的是当模型从一种数据格式切换到另一种数据格式时保留权重顺序。 
+不影响批量大小，它表明输入的维度的顺序。此参数的目的是当模型从一种数据格式切换到另一种数据格式时保留权重顺序。 即把多维的输入一维化，常用在从卷积层到全连接层的过渡。Flatten不影响batch的大小。
 
 ```python 
 keras.layers.Flatten(data_format=None) 

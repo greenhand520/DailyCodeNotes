@@ -19,3 +19,67 @@ defaultConfig {
 }
 ```
 
+
+
+> Android resource compilation failed
+> Output:  E:\CommonFiles\Projects\AndroidProject\MyApplicatioon\app\src\main\res\layout\activity_radio_test.xml:4: error: not well-formed (invalid token).
+>
+> Command: D:\AppData\.gradle\caches\transforms-1\files-1.1\aapt2-3.2.1-4818971-windows.jar\c15550d3941767ac27b1c97866e5bf31\aapt2-3.2.1-4818971-windows\aapt2.exe compile --legacy \
+>         -o \
+>         E:\CommonFiles\Projects\AndroidProject\MyApplicatioon\app\build\intermediates\res\merged\debug \
+>         E:\CommonFiles\Projects\AndroidProject\MyApplicatioon\app\src\main\res\layout\activity_radio_test.xml
+> Daemon:  AAPT2 aapt2-3.2.1-4818971-windows Daemon #2
+
+出现的原因正如上面提到的“Android resource compilation failed”，出现问题的资源文件是“activity_radio_test.xml”，文件的内容如下
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    :app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/sex_group"
+        android:text="please choose your sex:"
+        android:textSize="9pt"/>
+    <RadioGroup
+        android:id="@+id/sex_group"
+        android:contentDescription="sex"
+        android:layout_centerInParent="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RadioButton
+            android:id="@+id/sex_man"
+            android:text="man"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <RadioButton
+            android:id="@+id/sex_woman"
+            android:text="woman"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </RadioGroup>
+    <TextView
+    android:id="@+id/show_choice"
+    android:text="current choice is None"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/sex_group"
+    android:textSize="9pt"/>
+
+</RelativeLayout>
+```
+
+问题处在xml文件的开头，应该改成
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+```
+
