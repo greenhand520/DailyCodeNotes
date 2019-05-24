@@ -51,8 +51,8 @@ python setup.py install
 
 ### 配置该API的python path
 
-```
-activate-tf-gpu
+```shell
+activate tf-gpu
 set PYTHONPATH=E:\CommonFiles\git\models;E:\CommonFiles\git\models\research;E:\CommonFiles\git\models\research\slim;E:\CommonFiles\git\models\research\object_detection
 ```
 
@@ -62,7 +62,7 @@ PYTHONPATH后面的路径是clone的git的路径
 
 打开models\research\object_detection目录，终端中输入
 
-```
+```shell
 jupyter notebook object_detection_tutorial.ipynb
 ```
 
@@ -188,7 +188,7 @@ def class_text_to_int(row_label):
     elif row_label == 'dir_right':
         return 3
     else:
-        None
+        return 0
 
 def split(df, group):
     data = namedtuple('data', ['filename', 'object'])
@@ -479,3 +479,4 @@ python model_main.py --pipeline_config_path=training/faster_rcnn_inception_v2_pe
 
 但是，估计百分之一会报错，需要安装`pycocotools`。
 
+未完待续。。。

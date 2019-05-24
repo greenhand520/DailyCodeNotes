@@ -23,7 +23,7 @@ source /etc/profile
 
 打开`${tomcat install path}/bin/startup.sh`，在最后一行之前添加：
 
-```
+```shell
 #set java environment
 export JAVA_HOME=/Programs/jdk1.8.0_181
 export JRE_HOME=${JAVA_HOME}/jre
