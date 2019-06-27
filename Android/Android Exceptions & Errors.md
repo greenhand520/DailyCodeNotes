@@ -83,3 +83,16 @@ xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
 ```
 
+> Error:android-apt plugin is incompatible with the Android Gradle plugin. Please use 'annotationProc
+
+1、把module/build.gradle下的apt插件应用全部注释掉
+
+![1558740405409](assets/1558740405409.png)
+
+2、把dependencies下的apt全部改为annotationProcessor
+
+![1558740445501](assets/1558740445501.png)
+
+3、把project/build.gradle中的apt插件声明注释
+
+![1558740462568](assets/1558740462568.png)
