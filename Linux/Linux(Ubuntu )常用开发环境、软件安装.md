@@ -328,9 +328,9 @@ sudo apt-get install zsh-syntax-highlighting
 git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
 gedit ~/.zshrc
 # 文末添加这几句 
-# source /usr/share/autojump/autojump.zsh
-# source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-# source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+source /usr/share/autojump/autojump.zsh
+source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/.zshrc
 # 重启终端
 ```
@@ -473,8 +473,6 @@ winetricks donet20
 winetricks donet40
 ```
 
-
-
 ## 12、vmware
 
 下载安装包 https://www.vmware.com/cn/products/workstation-pro/workstation-pro-evaluation.html
@@ -548,3 +546,73 @@ sudo apt install p7zip-full unrar
 sudo passwd $(username)
 ```
 
+## 3、系统备份与还原
+
+### 备份
+
+```shell
+su
+tar -cvpzf /media/mdmbct/Myfiles/ubuntu_backup@`date +%Y-%m+%d`.tar.gz --exclude=/proc --exclude=/tmp --exclude=/media --exclude=/mnt /
+```
+
+`/media/mdmbct/Myfiles/ubuntu_backup@date +%Y-%m+%d.tar.gz`是备份文件的存放目录
+
+参数： 
+-c： 新建一个备份文档 
+-v： 显示详细信息 
+-p： 保存权限，并应用到所有文件 
+-z： 用gzip压缩备份文档，减小空间 
+-f： 指定备份文件的路径 
+–exclude： 排除指定目录，不进行备份
+
+### 还原
+
+1. 进入ubuntu启动盘的系统
+
+2. 进入试用Ubuntu后，先获取root权限
+
+    ```shell
+    sudo -s
+    ```
+
+3. 挂载
+    挂载备份的系统硬盘.可以使用fdisk -l(比如root权限)查看硬盘号，（如/目录挂载在sdaX）
+    在根目录下新建一个文件夹backup（这名字无所谓），用来挂载系统硬盘。
+
+```shell
+cd /
+mkdir backup
+mount /dev/sdaX /backup
+```
+
+
+注意：sda1,sdb1按照fdisk -l查看的的实际情况替换。
+
+进入backup文件夹下查看是否挂载成功。如果挂载成功，文件夹下应该是备份Linux系统文件。
+
+4. 记录新硬盘的UUID号（如果是迁移到新硬盘一定要做这一步）
+    进入backup原始系统下，备份系统配置文件fstab fstab.d
+
+```shel
+cd /backup/etc/
+gedit fstab
+```
+
+
+UUID号在fstab里面,我有四个UUID号，/swap,/,/boot/efi,/home
+等一下要替换备份压缩包中的UUID
+
+5. 将备份的压缩包解压到backup里，将替换掉原来的文件
+
+    ```shell
+    tar -xvpzf /media/myDisk/ubuntu_boot_backup@xxx-xx-xx.tar.gz -C /backup
+    ```
+
+6. 打开 fstab修改UUID号
+
+    ```shell
+    cd /backup/etc/
+    gedit fstab
+    ```
+
+7. 重启完成
