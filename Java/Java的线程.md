@@ -8,7 +8,7 @@
 
 通过继承Thread类创建线程类的具体步骤和具体代码如下：
 
-   • 定义一个继承Thread类的子类，并重写该类的run()方法；
+   • 定义一个继承Thread类的子类，并重写该类的`run()`方法；
 
    • 创建Thread子类的实例，即创建了线程对象；
 
@@ -31,7 +31,7 @@ public static void main(String[] args){
 
 通过实现Runnable接口创建线程类的具体步骤和具体代码如下：
 
-   • 定义Runnable接口的实现类，并重写该接口的run()方法；
+   • 定义Runnable接口的实现类，并重写该接口的`run()`方法；
 
    • 创建Runnable实现类的实例，并以此实例作为Thread的target对象，即该Thread对象才是真正的线程对象。
 
@@ -68,7 +68,7 @@ public interface Callable<V> {
 
 怎么使用Callable：
 
-一般情况下是配合ExecutorService来使用的，在ExecutorService接口中声明了若干个submit方法的重载版本：
+一般情况下是配合ExecutorService来使用的，在ExecutorService接口中声明了若干个`submit()`方法的重载版本：
 
 ```java
 <T> Future<T> submit(Callable<T> task);
@@ -97,7 +97,7 @@ public interface Future<V> {
 
 在Future接口中声明了5个方法，下面依次解释每个方法的作用：
 
-- cancel方法用来取消任务，如果取消任务成功则返回true，如果取消任务失败则返回false。参数mayInterruptIfRunning表示是否允许取消正在执行却没有执行完毕的任务，如果设置true，则表示可以取消正在执行过程中的任务。如果任务已经完成，则无论mayInterruptIfRunning为true还是false，此方法肯定返回false，即如果取消已经完成的任务会返回false；如果任务正在执行，若mayInterruptIfRunning设置为true，则返回true，若mayInterruptIfRunning设置为false，则返回false；如果任务还没有执行，则无论mayInterruptIfRunning为true还是false，肯定返回true。
+- cancel方法用来取消任务，如果取消任务成功则返回true，如果取消任务失败则返回false。参数`mayInterruptIfRunning`表示是否允许取消正在执行却没有执行完毕的任务，如果设置true，则表示可以取消正在执行过程中的任务。如果任务已经完成，则无论`mayInterruptIfRunning`为true还是false，此方法肯定返回false，即如果取消已经完成的任务会返回false；如果任务正在执行，若`mayInterruptIfRunning`设置为true，则返回true，若`mayInterruptIfRunning`设置为false，则返回false；如果任务还没有执行，则无论`mayInterruptIfRunning`为true还是false，肯定返回true。
 - isCancelled方法表示任务是否被取消成功，如果在任务正常完成前被取消成功，则返回 true。
 - isDone方法表示任务是否已经完成，若任务完成，则返回true；
 - get()方法用来获取执行结果，这个方法会产生阻塞，会一直等到任务执行完毕才返回；
@@ -249,11 +249,11 @@ class Task implements Callable<Integer>{
 
 ## 线程的各种方法
 
-### 线程中断方法interrupt（）的使用
+### 线程中断方法`interrupt()`的使用
 
-中断在java中主要有3个方法，interrupt(),isInterrupted()和interrupted()。
+中断在java中主要有3个方法，`interrupt()`, `isInterrupted()`和`interrupted()`。
 
-- interrupt()，在一个线程中调用另一个线程的interrupt()方法，即会向那个线程发出信号——线程中断状态已被设置。至于那个线程何去何从，由具体的代码实现决定。不能中断在运行中的线程，它只能改变中断状态而已。
+- interrupt()，在一个线程中调用另一个线程的interrupt()方法，即会向那个线程发出信号——线程中断状态已被设置。至于那个线程何去何从，由具体的代码实现决定。不能中断在运行中的线程，它只能改变中断状态而已。线程中不中断不一定。
 - isInterrupted()，用来判断当前线程的中断状态(true or false)。
 - interrupted()是个Thread的static方法，用来恢复中断状态。
 
@@ -302,7 +302,296 @@ public class InterruptDemo implements Runnable{
 
 第10行的开关也可以控制线程的中断。
 
-### 线程同步方法join（）的使用
+#### 线程的interrupt与线程的阻塞
+
+在Thread中，有一些耗时操作，比如`sleep()`、`join()`、`wait()`等，都会在执行的时候check interrupt的状态，一旦检测到为true，立刻抛出`InterruptedException`。线程的`interrupt()`调用不管是在该线程的阻塞方法调用前或调用后，都会导致该线程抛出`InterruptedException`最终导致线程停止运行。
+
+举例：
+
+**在阻塞方法调用前**
+
+```java
+public class InterruptTest {
+
+    public static class TestThread extends Thread {
+        public volatile boolean go = false;
+        @Override
+        public void run() {
+            test();
+        }
+
+        private synchronized void test() {
+            System.out.println("running");
+            while (!go) {
+            }
+            try {
+                if (isInterrupted()) {
+                    System.out.println("Interrupted");
+                }
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                System.out.println("InterruptedException");
+            }
+        }
+    }
+    
+    public static void main(String[] args) {
+        TestThread thread = new TestThread();
+        thread.start();
+        thread.interrupt();
+        thread.go = true;
+    }
+}
+```
+
+结果：
+
+> running
+> Interrupted
+> java.lang.InterruptedException
+> 	at java.lang.Object.wait(Native Method)
+> 	at java.lang.Object.wait(Object.java:502)
+> 	at cn.mdmbct.testdemo.thread.InterruptTest TestThread.test(InterruptTest.java:18)
+> 	at cn.mdmbct.testdemo.thread.InterruptTest$TestThread.run(InterruptTest.java:7)
+> InterruptedException
+
+**在阻塞方法调用后**
+
+```java
+public class InterruptTest2 {
+    public static class TestThread extends Thread{
+        public volatile boolean go = false;
+        @Override
+        public void run(){
+            test();
+        }
+        private synchronized void test(){
+            System.out.println("running");
+            try {
+                if(isInterrupted()){
+                    System.out.println("Interrupted");
+                }
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                System.out.println("InterruptedException");
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        TestThread thread = new TestThread();
+        thread.start();
+        try {
+            Thread.currentThread().sleep(2000);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        thread.interrupt();
+    }
+}
+```
+
+结果：
+
+> running
+> java.lang.InterruptedException
+> 	at java.lang.Object.wait(Native Method)
+> 	at java.lang.Object.wait(Object.java:502)
+> 	at cn.mdmbct.testdemo.thread.InterruptTest2 TestThread.test(InterruptTest2.java:14)
+> 	at cn.mdmbct.testdemo.thread.Inter、ruptTest2$TestThread.run(InterruptTest2.java:6)
+> InterruptedException
+
+Java中凡是抛出InterruptedException的方法（再加上Thread.interrupted()），都会在抛异常的时候，将interrupt flag重新置为false。
+
+这也就是说，当一个线程B被中断的时候（比如正在`sleep()`），它会结束sleep状态，抛出`InterruptedException`，并将interrupt flag置为false。这也就意味着，此时再去检查线程B的interrupt flag的状态，它是false，不能证明它被中断了，现在唯一能证明当前线程B被中断的证据就是我们现在catch到的`InterruptedException`。如果我们不负责任地直接把这个`InterruptedException`扔掉了，那么没有人知道刚刚发生了中断，没有人知道刚刚有另一个线程想要让线程B停下来，这是不符合程序的目的的：别的线程想让它停下来，而它直接忽略了这个操作。
+
+#### 处理InterruptedException
+
+##### 传递InterruptedException
+
+避开这个异常是最简单明智的做法：直接将异常传递给调用者。这有两种实现方式：
+
+1. 不捕获该异常，在该方法上声明会`throws InterruptedException`；
+2. 捕获该异常，做一些操作，然后再**原封不动地**抛出该异常。
+
+错误示范：
+
+```java
+try {
+	Thread.sleep(100);
+} catch (InterruptedException e) {
+	e.printStackTrace();
+	throw new RuntimeException(e);
+}
+```
+
+这一通操作之后，线程还活着，并且只给上层调用者一个`RuntimeException`，这是不对的。我们必须告诉上层调用者有人想中断这个线程，至于上层怎么做，就不归我们管了。如果一个caller调用的方法可能会抛出`InterruptedException`异常，那么这个caller需要考虑怎么处理这个异常。
+
+##### 恢复中断状态
+
+这里的恢复中断状态指的是，既然该线程的interrupt flag在抛出`InterruptedException`的时候被置为了false，那么们再重新置为true就好了，告诉后面需要check flag的人，该线程被中断了。这样中断信息不会丢失。通过`Thread.currentThread().interrupt()`方法，将该线程的interrupt flag重新置为true。
+
+```java
+try {
+	Thread.sleep(100);
+} catch (InterruptedException e) {
+	e.printStackTrace();
+	Thread.currentThread().interrupt();
+}
+```
+
+#### Demo
+
+##### 传递InterruptedException，不捕获异常，直接抛给调用者
+
+当主线程发出interrupt信号的时候，子线程的`sleep()`被中断，抛出`InterruptedException`。
+
+`sleepBabySleep()`不处理`sleep()`抛出的该异常，直接交到上级caller。上级caller，即`doAPseudoHeavyWeightJob()`也不处理，继续交给上级caller，最后直接整个线程挂了。也相当于成功退出了线程。
+
+```java
+package example.thread.interrupt;
+
+public class InterruptDemo1 extends Thread {
+
+    @Override
+    public void run() {
+        try {
+            doAPseudoHeavyWeightJob();
+        } catch (InterruptedException e) {
+            System.out.println("=.= I(a thread) am dying...");
+            e.printStackTrace();
+        }
+    }
+
+    private void doAPseudoHeavyWeightJob() throws InterruptedException {
+
+        for (int i = 0; i < Integer.MAX_VALUE; i++) {
+            System.out.println(i);
+            if (i > 10) {
+                Thread.currentThread().interrupt();
+            }
+            // quit if another thread let me interrupt
+            if (Thread.currentThread().isInterrupted()) {
+                System.out.println("Thread interrupted. Exiting...");
+                break;
+            } else {
+                sleepBabySleep();
+            }
+        }
+    }
+
+    private void sleepBabySleep() throws InterruptedException {
+            Thread.sleep(1000);
+            System.out.println("Slept for a while!");
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        InterruptDemo1 thread = new InterruptDemo1();
+        thread.start();
+        Thread.sleep(5000);
+        // let me interrupt
+        thread.interrupt();
+        System.out.println("IN MAIN:" + thread.isInterrupted());
+    }
+}
+
+```
+
+结果：
+
+> 0
+> Slept for a while!
+> 1
+> Slept for a while!
+> 2
+> Slept for a while!
+> 3
+> Slept for a while!
+> 4
+> =.= I(a thread) am dying...
+> IN MAIN:false
+> java.lang.InterruptedException: sleep interrupted
+> 	at java.lang.Thread.sleep(Native Method)
+> 	at cn.mdmbct.testdemo.thread.InterruptDemo1.sleepBabySleep(InterruptDemo1.java:47)
+> 	at cn.mdmbct.testdemo.thread.InterruptDemo1.doAPseudoHeavyWeightJob(InterruptDemo1.java:41)
+> 	at cn.mdmbct.testdemo.thread.InterruptDemo1.run(InterruptDemo1.java:22)
+
+##### 恢复中断状态
+
+当主线程发出interrupt信号的时候，子线程的`sleep()`被中断，抛出`InterruptedException`。
+
+`sleepBabySleep()`在处理该异常的时候，重新设置interrupt flag为true，则子线程在检测中断flag的时候，成功退出线程。（当然，如果子线程始终不检查是否被中断了，也永远不会退出。所以我们在做一个很耗时的操作时，应该有觉悟检查中断状态，以便收到中断信号时退出。）
+
+```java
+package cn.mdmbct.testdemo.thread;
+
+public class InterruptDemo2 extends Thread {
+
+    @Override
+    public void run() {
+        doAPseudoHeavyWeightJob();
+    }
+
+    private void doAPseudoHeavyWeightJob() {
+
+        for (int i = 0; i < Integer.MAX_VALUE; i++) {
+            System.out.println(i);
+            if (i > 10) {
+                Thread.currentThread().interrupt();
+            }
+            // quit if another thread let me interrupt
+            if (Thread.currentThread().isInterrupted()) {
+                System.out.println("Thread interrupted. Exiting...");
+                break;
+            } else {
+                sleepBabySleep();
+            }
+        }
+    }
+
+    private void sleepBabySleep() {
+        try {
+            Thread.sleep(1000);
+            System.out.println("Slept for a while!");
+        } catch (InterruptedException e) {
+            System.out.println("Interruption happens...");
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        InterruptDemo2 thread = new InterruptDemo2();
+        thread.start();
+        Thread.sleep(5000);
+        // let me interrupt
+        thread.interrupt();
+        System.out.println("IN MAIN:" + thread.isInterrupted());
+    }
+}
+```
+
+结果：
+
+> 0
+> Slept for a while!
+> 1
+> Slept for a while!
+> 2
+> Slept for a while!
+> 3
+> Slept for a while!
+> 4
+> Slept for a while!
+> 5
+> Thread interrupted. Exiting...
+> IN MAIN:true
+
+当然，如果子线程在耗时操作doAPseudoHeavyWeightJob()里始终不检查是否被中断了，也永远不会退出
+
+### 线程同步方法`join()`的使用
 
 Thread类中的join方法的主要作用就是同步，它可以使得线程之间的并行执行变为串行执行。具体看代码：
 
