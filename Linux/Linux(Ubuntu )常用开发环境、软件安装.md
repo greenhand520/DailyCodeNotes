@@ -1,6 +1,6 @@
-# 开发环境
+## 开发环境
 
-## 1、安装jdk
+### 1、安装jdk
 
 打开`/etc/profile`，在末尾添加
 
@@ -19,7 +19,7 @@ export PATH=${JAVA_HOME}/bin:$PATH
 source /etc/profile
 ```
 
-## 2、安装tomcat
+### 2、安装tomcat
 
 打开`${tomcat install path}/bin/startup.sh`，在最后一行之前添加：
 
@@ -35,7 +35,7 @@ export TOMCAT_HOME=/programs/apache-tomcat-9.0.8
 
 之后运行startup.sh后，在浏览器输入localhost:8080测试
 
-## 3、安装mysql
+### 3、安装mysql
 
 ```shell
 sudo apt-get install mysql-server
@@ -53,9 +53,9 @@ sudo netstat -tap | grep mysql
 
 > tcp        0      0 localhost:mysql         0.0.0.0:*               LISTEN      13739/mysqld  
 
-## 4、Python
+### 4、Python
 
-### 1）设置python默认为python3
+#### 1）设置python默认为python3
 
 在终端中以root身份登陆，输入下面两条命令即可
 
@@ -64,7 +64,7 @@ sudo update-alternatives --install /usr/bin/python python /usr/bin/python2 100
 sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 200
 ```
 
-### 2）安装pip pip3
+#### 2）安装pip pip3
 
 ```shell
 sudo apt-get install python-pip
@@ -97,7 +97,7 @@ pip国内的一些镜像
   清华大学 <https://pypi.tuna.tsinghua.edu.cn/simple/> 
   中国科学技术大学 <http://pypi.mirrors.ustc.edu.cn/simple/>
 
-### 3）安装虚拟环境
+#### 3）安装虚拟环境
 
 ```shell
 pip3 install python-virtualenv
@@ -143,7 +143,7 @@ mkvirtualenv -p python3 python-web
 
 退出: deactivate
 
-## 5、安装cmake
+### 5、安装cmake
 
 下载的cmake文件的路径为：`/Programs/cmake`，建立软链接
 
@@ -151,7 +151,7 @@ mkvirtualenv -p python3 python-web
 sudo ln -sf /Programs/cmake/bin/*  /usr/bin/
 ```
 
-## 6、安装nodejs
+### 6、安装nodejs
 
 法一：apt-get安装
 
@@ -189,7 +189,7 @@ npm install –g n
 
 $ n latest(升级node.js到最新版)  or $ n stable（升级node.js到最新稳定版）
 
-## 7、docker
+### 7、docker
 
 https://www.docker.com/
 
@@ -244,9 +244,9 @@ sudo apt-get remove docker docker-engine docker.io containerd runc
        stable"
     ```
 
-# 开发软件
+## 开发软件
 
-## 1、安装AndroidStudio
+### 1、AndroidStudio
 
 **添加环境变量**
 
@@ -277,19 +277,19 @@ KVM is required to run this AVD. /dev/kvm device: permission denied。
 sudo chown -R ${username}:${pwd} /dev/kvm
 ```
 
-## 2、安装jupyter notebook
+### 2、jupyter notebook
 
 ```shell
 pip3 install jupyter
 ```
 
-## 3、VScode
+### 3、VScode
 
 https://code.visualstudio.com/
 
-# 常用软件
+## 常用软件
 
-## 1、typora
+### 1、typora
 
 ```shell
 # or run:
@@ -302,17 +302,17 @@ sudo apt-get update
 sudo apt-get install typora
 ```
 
-## 2、cuteCom串口调试助手
+### 2、cuteCom串口调试助手
 
 ```shell
 sudo apt-get install cutecom
 ```
 
-## 3、shadowsocks-qt5
+### 3、shadowsocks-qt5
 
 https://github.com/shadowsocks/shadowsocks-qt5
 
-## 4、zsh
+### 4、zsh
 
 ```shell
 # 首先安装zsh
@@ -323,19 +323,177 @@ chsh -s /bin/zsh
 sudo apt-get install git #(如果没有安装git,先执行这一步)
 sudo wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh
 # 安装autojump, zsh-syntax-highlight, zsh-autosuggestion
-sudo apt install autojump
+# sudo apt install autojump
 sudo apt-get install zsh-syntax-highlighting
-git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
+# git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
 gedit ~/.zshrc
 # 文末添加这几句 
-source /usr/share/autojump/autojump.zsh
+# source /usr/share/autojump/autojump.zsh
 source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+# source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/.zshrc
 # 重启终端
 ```
 
-## 5、搜狗输入法
+自动补全插件incr
+
+1.创建`incr.zsh`文件
+
+```
+# Incremental completion for zsh
+# by y.fujii <y-fujii at mimosa-pudica.net>, public domain
+
+
+autoload -U compinit
+zle -N self-insert self-insert-incr
+zle -N vi-cmd-mode-incr
+zle -N vi-backward-delete-char-incr
+zle -N backward-delete-char-incr
+zle -N expand-or-complete-prefix-incr
+compinit
+
+bindkey -M viins '^[' vi-cmd-mode-incr
+bindkey -M viins '^h' vi-backward-delete-char-incr
+bindkey -M viins '^?' vi-backward-delete-char-incr
+bindkey -M viins '^i' expand-or-complete-prefix-incr
+bindkey -M emacs '^h' backward-delete-char-incr
+bindkey -M emacs '^?' backward-delete-char-incr
+bindkey -M emacs '^i' expand-or-complete-prefix-incr
+
+unsetopt automenu
+compdef -d scp
+compdef -d tar
+compdef -d make
+compdef -d java
+compdef -d svn
+compdef -d cvs
+
+# TODO:
+#     cp dir/
+
+now_predict=0
+
+function limit-completion
+{
+	if ((compstate[nmatches] <= 1)); then
+		zle -M ""
+	elif ((compstate[list_lines] > 6)); then
+		compstate[list]=""
+		zle -M "too many matches."
+	fi
+}
+
+function correct-prediction
+{
+	if ((now_predict == 1)); then
+		if [[ "$BUFFER" != "$buffer_prd" ]] || ((CURSOR != cursor_org)); then
+			now_predict=0
+		fi
+	fi
+}
+
+function remove-prediction
+{
+	if ((now_predict == 1)); then
+		BUFFER="$buffer_org"
+		now_predict=0
+	fi
+}
+
+function show-prediction
+{
+	# assert(now_predict == 0)
+	if
+		((PENDING == 0)) &&
+		((CURSOR > 1)) &&
+		[[ "$PREBUFFER" == "" ]] &&
+		[[ "$BUFFER[CURSOR]" != " " ]]
+	then
+		cursor_org="$CURSOR"
+		buffer_org="$BUFFER"
+		comppostfuncs=(limit-completion)
+		zle complete-word
+		cursor_prd="$CURSOR"
+		buffer_prd="$BUFFER"
+		if [[ "$buffer_org[1,cursor_org]" == "$buffer_prd[1,cursor_org]" ]]; then
+			CURSOR="$cursor_org"
+			if [[ "$buffer_org" != "$buffer_prd" ]] || ((cursor_org != cursor_prd)); then
+				now_predict=1
+			fi
+		else
+			BUFFER="$buffer_org"
+			CURSOR="$cursor_org"
+		fi
+		echo -n "\e[32m"
+	else
+		zle -M ""
+	fi
+}
+
+function preexec
+{
+	echo -n "\e[39m"
+}
+
+function vi-cmd-mode-incr
+{
+	correct-prediction
+	remove-prediction
+	zle vi-cmd-mode
+}
+
+function self-insert-incr
+{
+	correct-prediction
+	remove-prediction
+	if zle .self-insert; then
+		show-prediction
+	fi
+}
+
+function vi-backward-delete-char-incr
+{
+	correct-prediction
+	remove-prediction
+	if zle vi-backward-delete-char; then
+		show-prediction
+	fi
+}
+
+function backward-delete-char-incr
+{
+	correct-prediction
+	remove-prediction
+	if zle backward-delete-char; then
+		show-prediction
+	fi
+}
+
+function expand-or-complete-prefix-incr
+{
+	correct-prediction
+	if ((now_predict == 1)); then
+		CURSOR="$cursor_prd"
+		now_predict=0
+		comppostfuncs=(limit-completion)
+		zle list-choices
+	else
+		remove-prediction
+		zle expand-or-complete-prefix
+	fi
+}
+```
+
+2.放到`oh-my-zsh`的插件库中
+`.oh-my-zsh/plugins/`创建`incr`文件夹放到该文件夹中
+
+3.在`.zshrc`中添加
+
+在`.zshrc`文件末尾添加下面这行
+
+`source ~/.oh-my-zsh/plugins/incr/incr.zsh`
+
+### 5、搜狗输入法
 
 ```shell
 sudo apt install fcitx-bin
@@ -344,7 +502,7 @@ sudo dpkg -i sogoupinyin_2.2.0.0108_amd64.deb
 sudo apt install -f # 如果出现依赖错误输入这行处理，执行完后，继续输入上面的命令
 ```
 
-## 6、WPS
+### 6、WPS
 
 https://www.wps.cn/product/wpslinux/
 
@@ -379,11 +537,11 @@ sudo mkfontdir
 sudo fc-cache
 ```
 
-## 7、网易云音乐
+### 7、网易云音乐
 
 https://music.163.com/#/download
 
-## 8、MPV播放器
+### 8、MPV播放器
 
 ```sgell
 sudo apt-get install mpv
@@ -427,7 +585,7 @@ p / SPACE
 
 减少/增加音量
 
-## 9、deepin-wine
+### 9、deepin-wine
 
 github链接: https://github.com/wszqkzqk/deepin-wine-ubuntu
 
@@ -454,7 +612,7 @@ Ubuntu 18.04 下（Gnome 桌面）：
 
 执行 `WINEPREFIX=~/.deepinwine/容器名称 deepin-wine winecfg` 即可，也可以用此方法来调整缩放问题
 
-## 10、deepin desktop environment
+### 10、deepin desktop environment
 
 ```shell
 sudo add-apt-repository ppa:leaeasy/dde
@@ -463,7 +621,7 @@ sudo apt install dde dde-file-manager
 sudo apt install deepin-gtk-theme
 ```
 
-## 11、wine
+### 11、wine
 
 ```shell
 sudo apt-get install wine-stable
@@ -473,7 +631,7 @@ winetricks donet20
 winetricks donet40
 ```
 
-## 12、vmware
+### 12、vmware
 
 下载安装包 https://www.vmware.com/cn/products/workstation-pro/workstation-pro-evaluation.html
 
@@ -485,7 +643,7 @@ winetricks donet40
 vmware-installer -u vmware-workstation
 ```
 
-## 13、aria2
+### 13、aria2
 
 ```shell
 sudo apt-get install aria2
@@ -498,7 +656,7 @@ sudo apt-get install aria2
 aria2c http://xxxx
 ```
 
-## 14、gitg
+### 14、gitg
 
 git跟踪，并不能pull push
 
@@ -506,7 +664,7 @@ git跟踪，并不能pull push
 sudo apt-get install gitg
 ```
 
-## 15、fish
+### 15、fish
 
 与bash不太一样，部分shell可能不兼容fish
 
@@ -521,11 +679,29 @@ fish install --path=~/.local/share/omf --config=~/.config/omf
 
 这里不用fish作为默认解释器了
 
-## 16、CHM阅读器
+### 16、CHM阅读器
 
 ```shell
 sudo apt-get install kchmviewer
 ```
+
+### 17、flash
+
+https://get.adobe.com/cn/flashplayer/download/?installer=FP_32.0_for_Linux_64-bit_(.tar.gz)-_PPAPI&sType=7741&standalone=1
+
+```shell
+tar -zxvf flash_player_npapi_linux.x86_64.tar.gz
+cp libflashplayer.so /usr/lib/mozilla/plugins/
+cp libflashplayer.so /usr/lib/firefox-esr/browser/plugins
+```
+
+或
+
+```shell
+sudo apt-get install adobe-flashplugin
+```
+
+
 
 # 其他优化
 
@@ -546,7 +722,59 @@ sudo apt install p7zip-full unrar
 sudo passwd $(username)
 ```
 
-## 3、系统备份与还原
+## 3 、安装中文字体
+
+```shell
+apt-get install xfonts-intl-chinese
+ apt-get install ttf-wqy-microhei
+```
+
+## 4、时间同步
+
+安装`ntpdate`工具
+
+```shell
+sudo apt-get install ntpdate
+```
+
+设置系统时间与网络时间同步
+
+```shell
+ntpdate cn.pool.ntp.org
+```
+
+将系统时间写入硬件时间
+
+```shell
+sudo hwclock --localtime --systohc
+```
+
+cn.pool.ntp.org是位于中国的公共NTP服务器，用来同步你的时间(如果你的时间与服务器的时间截不同的话，可能无法同步时间哟，甚至连sudo reboot这样的指令也无法执行)。
+
+**自动同步网上时间**
+
+ 安装ntp工具
+
+```shell
+sudo apt-get install ntp
+```
+
+设置网络时间同步服务器
+
+```shell
+vim /etc/ntp.conf
+server ntp.ubuntu.com
+```
+
+启动服务
+
+```shell
+/etc/init.d/ntp start
+```
+
+ntp服务是一个比较特殊的东西，如果开启了，其它服务器也能向这台服务器获取时间，但它本身要向上一级服务器取时间，有点像DNS
+
+## 10、系统备份与还原
 
 ### 备份
 
@@ -616,3 +844,16 @@ UUID号在fstab里面,我有四个UUID号，/swap,/,/boot/efi,/home
     ```
 
 7. 重启完成
+
+## 4.Dock启用最小化操作
+
+```shell
+gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize'
+```
+
+## 5.deepin在文件夹中显示打开vscode
+
+```shell
+gvfs-mime --set inode/directory dde-file-manager.desktop
+```
+
